@@ -6,5 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+<ItemGroup>
+  <None Update="./in/*" CopyToOutputDirectory="PreserveNewest" />
+</ItemGroup>
 </Project>
