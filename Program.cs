@@ -32,19 +32,19 @@ class Program
             reservations.Add(new Reservation(p, k, z));
         }
 
-        int T = reservations.Max(r => r.k);
+        int T = reservations.Max(r => r.k); // najpozniej konczaca sie rezerwacja
 
-        List<Reservation>[] ending = new List<Reservation>[T + 1];
+        List<Reservation>[] ending = new List<Reservation>[T + 1]; // lista rezerwacji grupowana po ich godzinie konca
         for (int t = 0; t <= T; t++)
             ending[t] = new List<Reservation>();
 
         foreach (var r in reservations)
-            ending[r.k].Add(r);
+            ending[r.k].Add(r); // dla rezerwacji konczacej sie o godzinie k dodajemy to do listy na indeksie k w liscie ending
 
         int[] Z = new int[T + 1];
         Z[0] = 0;
 
-        for (int t = 1; t <= T; t++)
+        for (int t = 1; t <= T; t++) // wszystkie godziny
         {
             Z[t] = Z[t - 1];
 
@@ -54,7 +54,7 @@ class Program
             }
         }
         s.Stop();
-        System.Console.WriteLine($"elapsed: {s.ElapsedMilliseconds} ms");
+        Console.WriteLine($"elapsed: {s.ElapsedMilliseconds} ms");
         Console.WriteLine(Z[T]);
     }
 }
