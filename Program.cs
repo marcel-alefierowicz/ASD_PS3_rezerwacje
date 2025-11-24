@@ -15,34 +15,44 @@ class Program
     }
     static int profit(List<Reservation> reservations, ref List<int> excluded)
     {
-        int T = reservations.Max(r => r.k); // najpozniej konczaca sie rezerwacja
-        List<Reservation>[] ending = new List<Reservation>[T + 1]; // lista rezerwacji grupowana po ich godzinie konca
-        for (int t = 0; t <= T; t++)
-            ending[t] = new List<Reservation>();
+        int T = reservations.Max(r => r.k);
 
-        foreach (var r in reservations)
-            ending[r.k].Add(r); // dla rezerwacji konczacej sie o godzinie k dodajemy to do listy na indeksie k w liscie ending
+        List<Reservation>[] ending = new List<Reservation>[T + 1];
+        for (int t = 0; t <= T; t++) ending[t] = new();
+        foreach (var r in reservations) ending[r.k].Add(r);
 
         int[] Z = new int[T + 1];
-        Z[0] = 0;
+        int[] picked = new int[T + 1];
 
-        for (int t = 1; t <= T; t++) // wszystkie godziny
+        Z[0] = 0;
+        picked[0] = -1;
+
+        for (int t = 1; t <= T; t++)
         {
             Z[t] = Z[t - 1];
+            picked[t] = -1;
 
             foreach (var r in ending[t])
             {
-                if (!excluded.Contains(r.id))
+                if (Z[r.p] + r.z > Z[t])
                 {
-                    if (Z[r.p] + r.z > Z[t])
-                    {
-                        Z[t] = Z[r.p] + r.z;
-                        // THIS IS PREMATURE, TODO FIX !!!!!!!!!!!!!!!!!!!!!!!!!!
-                        excluded.Add(r.id);
-                    }
+                    Z[t] = Z[r.p] + r.z;
+                    picked[t] = r.id;
                 }
             }
         }
+
+        int cur = T;
+        while (cur > 0)
+        {
+            if (picked[cur] != -1)
+            {
+                var reservation = reservations[picked[cur]];
+                cur = reservation.p;
+            }
+            else --cur;
+        }
+
         return Z[T];
     }
 
@@ -68,11 +78,11 @@ class Program
             reservations.Add(new Reservation(p, k, z, i));
         }
 
-        int pokoj1 = profit(reservations, ref excluded);
-        int pokoj2 = profit(reservations, ref excluded);
-        int output = pokoj1 + pokoj2;
+        var room1 = profit(reservations, ref excluded);
+        var room2 = profit(reservations, ref excluded);
+
         s.Stop();
-        System.Console.WriteLine($"Zysk:{output}");
+        Console.WriteLine($"Zysk:{room1 + room2}");
         Console.WriteLine($"elapsed: {s.ElapsedMilliseconds} ms");
     }
 }
